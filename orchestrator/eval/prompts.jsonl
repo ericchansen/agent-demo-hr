@@ -1,0 +1,7 @@
+{"prompt": "What's Contoso's attrition rate in EMEA this year?", "expected_path": "data_agent", "expected_tools": [], "note": "aggregate/fuzzy -> Fabric data agent (NL2SQL)"}
+{"prompt": "Which team has the highest attrition?", "expected_path": "data_agent", "expected_tools": [], "note": "aggregate ranking -> data agent"}
+{"prompt": "List active employees on the Azure Data team in EMEA.", "expected_path": "roster_mcp", "expected_tools": ["list_roster"], "note": "deterministic list -> Roster MCP"}
+{"prompt": "Export the full active roster for my region to Excel.", "expected_path": "roster_mcp", "expected_tools": ["export_roster"], "note": "deterministic export; 'my region' from user_context"}
+{"prompt": "Who rolls up to employee 100001?", "expected_path": "roster_mcp", "expected_tools": ["list_org_under"], "note": "org tree walk -> recursive CTE"}
+{"prompt": "How many people are on the Field Sales team in my region?", "expected_path": "roster_mcp", "expected_tools": ["count_roster"], "note": "deterministic count -> Roster MCP"}
+{"prompt": "Show me EMEA attrition AND give me the list of those employees.", "expected_path": "both", "expected_tools": ["list_roster"], "note": "AMBIGUOUS: aggregate (data agent) + deterministic list (MCP) in one turn"}
