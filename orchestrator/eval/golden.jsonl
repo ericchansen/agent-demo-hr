@@ -1,0 +1,7 @@
+{"kind": "region_metrics", "region": "NA", "total": 2024, "active": 1505, "attrition_count": 519, "attrition_rate": 0.2564}
+{"kind": "region_metrics", "region": "EMEA", "total": 1410, "active": 1088, "attrition_count": 322, "attrition_rate": 0.2284}
+{"kind": "region_metrics", "region": "APAC", "total": 1073, "active": 822, "attrition_count": 251, "attrition_rate": 0.2339}
+{"kind": "region_metrics", "region": "LATAM", "total": 493, "active": 384, "attrition_count": 109, "attrition_rate": 0.2211}
+{"kind": "top_attrition_team", "team": "Azure Data"}
+{"kind": "roster_rowset", "scope_upn": "emea.hrbp@contoso.com", "filters": {"team": "Azure Data", "active_status": "Active"}, "count": 62, "employee_ids": [100080, 100092, 100125, 100209, 100246, 100299, 100343, 100348, 100383, 100536, 100564, 100572, 100593, 100599, 100791, 100919, 101089, 101128, 101207, 101226, 101332, 101464, 101748, 101871, 101900, 101913, 101937, 101984, 102001, 102172, 102197, 102264, 102558, 102657, 102687, 102836, 102913, 102976, 103192, 103272, 103359, 103473, 103520, 103551, 103720, 103732, 103796, 103798, 103955, 103987, 103991, 104032, 104238, 104242, 104434, 104568, 104569, 104649, 104723, 104755, 104969, 104999]}
+{"kind": "export_rowcount", "scope_upn": "emea.hrbp@contoso.com", "filters": {"active_status": "Active"}, "row_count": 1088}
