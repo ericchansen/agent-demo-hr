@@ -1,0 +1,40 @@
+title: Fabric-first HR agent
+description: >-
+  A synthetic-data reference implementation of a two-path HR analytics agent —
+  a Fabric data agent for aggregate questions and a deterministic roster tool
+  for exact lists and exports — orchestrated in Azure AI Foundry and surfaced in
+  Microsoft Teams, with per-user row-level security.
+
+# Served as a GitHub project page: https://ericchansen.github.io/agent-demo-hr/
+url: "https://ericchansen.github.io"
+baseurl: "/agent-demo-hr"
+
+# just-the-docs, pulled as a remote theme so GitHub Pages builds it natively.
+remote_theme: just-the-docs/just-the-docs
+color_scheme: dark
+search_enabled: true
+
+# Mermaid renders the architecture diagram. If the pinned version ever drifts,
+# the diagram degrades to a readable code block rather than breaking the build.
+mermaid:
+  version: "10.9.1"
+
+aux_links:
+  "GitHub repo":
+    - "https://github.com/ericchansen/agent-demo-hr"
+aux_links_new_tab: true
+
+# GitHub Pages plugin allow-list. jekyll-include-cache is required by the theme.
+plugins:
+  - jekyll-remote-theme
+  - jekyll-include-cache
+  - jekyll-seo-tag
+
+# Our pages don't declare a layout individually, so apply the theme's
+# `default` layout to every page (nav, search, dark theme, mermaid).
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+

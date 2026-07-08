@@ -1,3 +1,8 @@
+---
+title: Threat model
+nav_order: 7
+---
+
 # Threat model
 
 Scope: the local scaffold. All data is **synthetic Contoso** — a real

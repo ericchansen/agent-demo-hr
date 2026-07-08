@@ -1,5 +1,7 @@
 # agent-demo-hr
 
+📖 **Documentation:** <https://ericchansen.github.io/agent-demo-hr/>
+
 An open-source parallel of a real customer engagement: a **Fabric-first HR
 chatbot** on Azure AI Foundry, surfaced in Microsoft Teams, demonstrating a
 **two-path agent pattern** with **row-level security** keyed to the signed-in

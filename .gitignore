@@ -22,3 +22,13 @@ roster_mcp/exports/
 # OS
 .DS_Store
 Thumbs.db
+
+# local Jekyll preview (docs/) — not part of the Pages build
+docs/vendor/
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/.bundle/
+docs/Gemfile
+docs/Gemfile.lock
+

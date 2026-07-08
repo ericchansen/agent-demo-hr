@@ -1,3 +1,8 @@
+---
+title: Identity & RLS
+nav_order: 6
+---
+
 # Identity & RLS flow
 
 ## Local (this scaffold)
