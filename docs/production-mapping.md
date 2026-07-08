@@ -1,3 +1,8 @@
+---
+title: Local → cloud mapping
+nav_order: 8
+---
+
 # Production mapping
 
 How each local scaffold piece maps to its cloud counterpart. **TODO items are

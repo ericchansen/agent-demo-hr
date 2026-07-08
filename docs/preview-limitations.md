@@ -1,3 +1,8 @@
+---
+title: Current limitations
+nav_order: 10
+---
+
 # Preview limitations
 
 What the **local scaffold** does *not* do (yet). None of these are bugs — they

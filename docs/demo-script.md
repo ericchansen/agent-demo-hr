@@ -1,3 +1,8 @@
+---
+title: Demo script
+nav_order: 4
+---
+
 # Demo script — the acceptance test
 
 Six questions. Steps 1–2 exercise the **data-agent** (aggregate) path; steps
