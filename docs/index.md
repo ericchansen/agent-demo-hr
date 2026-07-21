@@ -9,7 +9,7 @@ nav_order: 1
 A **reference implementation** of a conversational HR analytics agent: one entry
 point in Microsoft Teams that answers both *aggregate* questions ("what's the
 attrition rate in EMEA?") and *deterministic* ones ("export the active roster
-for my region"), with every answer scoped to the signed-in user.
+for my region"), with row-returning answers scoped to the signed-in user.
 
 {: .warning }
 > **Synthetic data only.** Every employee, name, email, salary, and metric in
@@ -31,8 +31,9 @@ for my region"), with every answer scoped to the signed-in user.
 Aggregate questions route to a **Fabric data agent** (natural-language-to-SQL
 over a semantic model); exact list/count/export questions route to a
 **deterministic roster tool** — because a data agent is built for a *number*,
-not a *full roster export* — and both enforce the caller's row-level security
-server-side.
+not a *full roster export*. The deterministic path enforces the caller's
+row-level security server-side; production aggregate queries inherit Fabric's
+data permissions.
 
 ## Running it locally
 

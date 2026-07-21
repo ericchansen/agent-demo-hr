@@ -53,9 +53,9 @@ flowchart TD
 
 | Component | Role | Product | Local stand-in (this repo) |
 |-----------|------|---------|----------------------------|
-| **Surface** | Where the user chats | Microsoft Teams with [SSO](https://learn.microsoft.com/microsoftteams/platform/concepts/authentication/authentication) | An env-var persona (`ROSTER_DEV_UPN`) |
-| **Orchestrator** | Routes each turn to a path; holds the system prompt | Azure AI Foundry agent | `orchestrator/instructions.md` + the eval router |
-| **Aggregate path** | Turns a question into governed SQL/DAX; returns a number | [Fabric data agent](https://learn.microsoft.com/fabric/data-science/concept-data-agent), [consumed in Foundry via its MCP endpoint](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric) | Golden numbers computed from the seed, validated in the eval |
+| **Surface** | Where the user chats | Microsoft Teams with [SSO](https://learn.microsoft.com/microsoftteams/platform/concepts/authentication/authentication) | `demo/` web chat + synthetic persona dropdown |
+| **Orchestrator** | Routes each turn to a path; holds the system prompt | Azure AI Foundry agent | `demo/router.py` keyword router + `orchestrator/instructions.md` |
+| **Aggregate path** | Turns a question into governed SQL/DAX; returns a number | [Fabric data agent](https://learn.microsoft.com/fabric/data-science/concept-data-agent), [consumed in Foundry via its MCP endpoint](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric) | `demo/data_agent.py` computes golden metrics from the seed |
 | **Deterministic path** | Exact list / count / org-walk / **file export** | Roster tool — a custom **MCP server** over parameterized SQL | `roster_mcp/` against SQLite (fully built) |
 | **Data** | Employees + people metrics | Fabric **lakehouse** table + **semantic model** | `data/hr_local.db` (SQLite) seeded from committed synthetic parquet/CSV |
 | **Identity & security** | Per-user scoping | Entra ID + [On-Behalf-Of](https://learn.microsoft.com/entra/identity-platform/v2-oauth2-on-behalf-of-flow) → [Fabric row-level security](https://learn.microsoft.com/fabric/data-warehouse/row-level-security) | `auth_obo.py` scope shim over an `hr_access` map |
@@ -84,9 +84,10 @@ and is exercised by the [demo script](demo-script.html).
 RLS is enforced **server-side, on every tool call**, and is the same behavior
 locally and in the cloud — only the mechanism changes:
 
-1. **Identity is resolved server-side**, never passed as a tool parameter — so a
-   caller can never widen their own scope. The MCP surface deliberately exposes
-   no `scope`/`region` override.
+1. **Identity is resolved before the tool call**, never passed as a tool
+   parameter. The MCP surface deliberately exposes no `scope` override. The
+   local web demo intentionally lets its operator choose a synthetic persona;
+   that selector is a demonstration shim, not authentication.
 2. **Scope is always AND-ed into the query.** The caller's allowed region/team
    is appended to every `WHERE` clause (`roster_mcp/db.py::build_where`).
 3. **Fail closed.** An unknown user resolves to an impossible scope → zero rows,

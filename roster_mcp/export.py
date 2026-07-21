@@ -7,6 +7,7 @@ materialize the whole result set in memory.
 from __future__ import annotations
 
 import csv
+import secrets
 from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
@@ -21,13 +22,13 @@ def export_rows(
     out_dir: Path,
     name_hint: str = "roster",
 ) -> tuple[Path, int]:
-    """Write ``rows`` to a timestamped file. Returns (path, row_count)."""
+    """Write ``rows`` to a uniquely named file. Returns (path, row_count)."""
     if fmt not in ("csv", "xlsx"):
         raise ValueError(f"unsupported format: {fmt!r} (use csv or xlsx)")
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
-    path = out_dir / f"{name_hint}_{ts}.{fmt}"
+    path = out_dir / f"{name_hint}_{ts}_{secrets.token_hex(8)}.{fmt}"
 
     n = 0
     if fmt == "csv":

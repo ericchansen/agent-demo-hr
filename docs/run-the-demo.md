@@ -23,8 +23,9 @@ Open <http://127.0.0.1:8000> and click a suggested question (or type your own).
 
 ## What you're looking at
 
-- **Signed in as** (top right) — the persona dropdown. It sets the signed-in
-  user for every request; *nothing in the message* can widen what they see.
+- **Signed in as** (top right) — the local persona dropdown. It sets the
+  synthetic identity for each request; message text cannot widen a Roster
+  query beyond that persona's mapped scope.
 - **A path/tool badge** on each answer — <span style="color:#4a9eda">**aggregate**</span>
   (the data-agent path) or <span style="color:#b17ad6">**deterministic**</span>
   (a Roster tool). This mirrors the two paths on the
@@ -38,6 +39,7 @@ Open <http://127.0.0.1:8000> and click a suggested question (or type your own).
 |----------|------|------|
 | "attrition rate in EMEA?", "which team has the highest attrition?" | aggregate | `region_attrition`, `top_attrition_team` |
 | "list active Azure Data employees", "who rolls up to 100001?", "export my region" | deterministic | `list_roster`, `list_org_under`, `export_roster` |
+| "show EMEA attrition and list employees who left" | mixed | `region_attrition` + `list_roster` |
 
 The exact numbers are the acceptance test on the
 [Demo script]({{ "/demo-script.html" | relative_url }}) page.
@@ -52,8 +54,9 @@ from the message. The two rowsets are provably disjoint (see
 
 ## What's real vs. stand-in
 
-The Roster tools, the parameterized SQL, the RLS filtering, and the export are
-the **same code** that runs in the cloud. Two pieces are local stand-ins:
+The Roster tools, parameterized SQL, RLS filtering, and export contracts are
+the code intended to carry forward to the cloud implementation. Two pieces are
+explicit local stand-ins:
 
 - the **aggregate answers** are computed straight from the SQLite seed
   (`demo/data_agent.py`) instead of the Fabric data agent, and

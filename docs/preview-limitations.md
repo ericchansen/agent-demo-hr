@@ -17,7 +17,8 @@ are the cloud phases, deferred by design.
   real token. No real OBO exchange; RLS is emulated on `hr_access`.
 - **Local file exports.** `export_roster` writes to local disk. The cloud target
   is Blob + SAS URL.
-- **No Teams surface.** No SSO, no manifest, no publish.
+- **No real Teams surface.** The browser UI is Teams-style only; there is no
+  SSO, app manifest, or publish step.
 - **No infra deploy.** `infra/` and `e2e/` are stubs; azd/Bicep and Playwright
   come later.
 - **Single snapshot dataset.** "This year" maps to the one snapshot's trailing

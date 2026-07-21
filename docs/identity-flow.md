@@ -13,10 +13,13 @@ ROSTER_DEV_UPN ──► auth_obo.resolve_scope() ──► hr_access lookup ─
                           every tool ANDs Scope into the WHERE clause ─┘
 ```
 
-- `auth_obo.current_upn()` returns the mock signed-in user (`ROSTER_DEV_UPN`).
+- `auth_obo.current_upn()` returns the default mock identity
+  (`ROSTER_DEV_UPN`); the local web demo can explicitly select a synthetic
+  persona instead.
 - `resolve_scope()` reads `hr_access(user_upn, allowed_region, allowed_team)`.
 - Unknown UPN → **fail closed** (impossible region, zero rows).
 - RLS is emulated by filtering on `allowed_region` / `allowed_team`.
+- The persona selector is a demo control, not an authentication boundary.
 
 ## Cloud (TODO — later phase)
 
