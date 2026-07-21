@@ -17,8 +17,9 @@ deployment against live HR data raises the stakes on everything below.
 
 ### 1. Row-level security (RLS)
 Every Roster MCP tool resolves the caller's scope server-side (`auth_obo.py`)
-and ANDs it into every query (`db.build_where`). A caller can never widen their
-own scope — the MCP surface deliberately exposes **no** scope parameter.
+and ANDs it into every query (`db.build_where`). The MCP surface deliberately
+exposes **no** scope parameter, so message/tool arguments cannot widen the
+resolved scope.
 Negative tests in `roster_mcp/tests/test_rls.py` assert out-of-scope rows are
 never returned (must pass 100%).
 
@@ -45,4 +46,6 @@ implemented locally; wire it in when the OBO exchange lands (`auth_obo.py` TODO)
 ## Non-goals / accepted for the demo
 - The local identity is a **dev shim** (env-var UPN), not a real token. Real OBO
   is a documented cloud TODO.
+- The local web demo deliberately lets its operator choose a synthetic persona;
+  it demonstrates RLS behavior but is not an authentication boundary.
 - No encryption at rest for the local SQLite file (synthetic data, dev only).

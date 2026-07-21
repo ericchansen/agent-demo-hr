@@ -21,6 +21,7 @@ from roster_mcp.config import db_path, export_dir
 from .router import route
 
 HOST, PORT = "127.0.0.1", 8000
+MAX_REQUEST_BYTES = 16_384
 
 PERSONAS = [
     ("EMEA HR Business Partner", "emea.hrbp@contoso.com"),
@@ -65,6 +66,19 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _send_json(self, code: int, payload: dict) -> None:
+        self._send(
+            code,
+            json.dumps(payload).encode("utf-8"),
+            "application/json; charset=utf-8",
+        )
+
+    def _json_error(self, code: int, message: str) -> None:
+        self._send_json(
+            code,
+            {"path": "deterministic", "tool": "error", "answer": message},
+        )
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path in ("/", "/index.html"):
@@ -80,14 +94,35 @@ class Handler(BaseHTTPRequestHandler):
         if urlparse(self.path).path != "/chat":
             self._send(404, b"not found", "text/plain")
             return
-        length = int(self.headers.get("Content-Length", 0))
-        payload = json.loads(self.rfile.read(length) or b"{}")
         try:
-            scope = resolve_scope(payload.get("upn") or None)
-            result = route(payload.get("question", ""), scope)
-        except Exception as exc:  # UX boundary: never 500 the demo on odd input
-            result = {"path": "deterministic", "tool": "error", "answer": f"Sorry — {exc}"}
-        self._send(200, json.dumps(result).encode("utf-8"), "application/json")
+            length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            self._json_error(400, "Invalid Content-Length.")
+            return
+        if length <= 0:
+            self._json_error(400, "Request body is required.")
+            return
+        if length > MAX_REQUEST_BYTES:
+            self._json_error(413, "Request body is too large.")
+            return
+        try:
+            payload = json.loads(self.rfile.read(length))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            self._json_error(400, "Request body must be valid JSON.")
+            return
+        if not isinstance(payload, dict):
+            self._json_error(400, "Request body must be a JSON object.")
+            return
+        question = payload.get("question")
+        upn = payload.get("upn")
+        if not isinstance(question, str) or not question.strip():
+            self._json_error(400, "Question is required.")
+            return
+        if upn is not None and not isinstance(upn, str):
+            self._json_error(400, "UPN must be a string.")
+            return
+        scope = resolve_scope(upn or None)
+        self._send_json(200, route(question, scope))
 
     def _download(self, name: str) -> None:
         base = export_dir().resolve()
@@ -111,9 +146,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main() -> None:
     if not db_path().exists():
-        raise SystemExit(
-            f"Seed DB not found at {db_path()}. Run:  python data/seed_local.py"
-        )
+        raise SystemExit(f"Seed DB not found at {db_path()}. Run:  python data/seed_local.py")
     print(f"Contoso HR Assistant demo -> http://{HOST}:{PORT}  (Ctrl+C to stop)")
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
 

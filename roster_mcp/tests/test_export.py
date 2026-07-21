@@ -49,6 +49,12 @@ def test_export_excludes_sensitive_columns(emea_scope):
     assert SENSITIVE.isdisjoint(res["columns"])
 
 
+def test_back_to_back_exports_use_distinct_paths(emea_scope):
+    first = export_roster({"active_status": "Active"}, "csv", emea_scope)
+    second = export_roster({"active_status": "Active"}, "csv", emea_scope)
+    assert first["path"] != second["path"]
+
+
 def test_export_never_leaks_out_of_scope(emea_scope):
     res = export_roster({}, "csv", emea_scope)
     with open(res["path"], newline="", encoding="utf-8") as fh:

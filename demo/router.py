@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import re
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 from roster_mcp.auth_obo import Scope, resolve_scope
@@ -64,21 +65,40 @@ def _find_manager_id(q: str) -> int | None:
 
 def _roster_filters(q: str) -> dict[str, Any]:
     filters: dict[str, Any] = {}
+    ql = q.lower()
     team = _find_team(q)
     if team:
         filters["team"] = team
     region = _find_region(q)
     if region:  # can only narrow within the caller's scope; RLS still ANDs its own
         filters["region"] = region
-    if "active" in q.lower():
+    if re.search(r"\b(inactive|terminated|former)\b", ql) or "who left" in ql:
+        filters["active_status"] = "Terminated"
+    elif re.search(r"\bactive\b", ql):
         filters["active_status"] = "Active"
     return filters
+
+
+def _aggregate_kind(ql: str) -> str | None:
+    if "highest" in ql or "which team" in ql or "top team" in ql:
+        return "top_team"
+    if any(k in ql for k in ("attrition", "turnover", " rate", "average", "trend")):
+        return "region_rate"
+    return None
+
+
+def _has_explicit_list_intent(ql: str) -> bool:
+    return any(
+        k in ql for k in ("list", "who are", "who is on", "who left", "roster of", "employees")
+    )
 
 
 def route(question: str, scope: Scope | None = None) -> dict:
     """Classify, execute the chosen path, and return a rendered result dict."""
     scope = scope or resolve_scope()
     ql = question.lower()
+    aggregate_kind = _aggregate_kind(ql)
+    explicit_list = _has_explicit_list_intent(ql)
 
     # --- deterministic (row-level) path: explicit verbs win ---
     if "export" in ql or "download" in ql:
@@ -87,16 +107,19 @@ def route(question: str, scope: Scope | None = None) -> dict:
         return _do_org(question, scope)
     if "how many" in ql or "count" in ql:
         return _do_count(question, scope)
-    if any(k in ql for k in ("list", "show", "who are", "who is on", "roster of")):
+    if aggregate_kind and explicit_list:
+        return _do_mixed(question, scope, aggregate_kind)
+    if explicit_list or ("show" in ql and aggregate_kind is None):
         return _do_list(question, scope)
 
     # --- aggregate (fuzzy) path ---
-    if "highest" in ql or "which team" in ql or "top team" in ql:
+    if aggregate_kind == "top_team":
         return _do_top_team()
     return _do_region_rate(question)
 
 
 # --- deterministic handlers -------------------------------------------------
+
 
 def _do_list(q: str, scope: Scope) -> dict:
     res = list_roster(_roster_filters(q), limit=200, scope=scope)
@@ -141,10 +164,7 @@ def _do_org(q: str, scope: Scope) -> dict:
 def _do_export(q: str, scope: Scope) -> dict:
     ql = q.lower()
     fmt = "csv" if ("csv" in ql and "excel" not in ql and "xlsx" not in ql) else "xlsx"
-    filters: dict[str, Any] = {"active_status": "Active"} if "active" in ql else {}
-    res = export_roster(filters, fmt, scope)
-    from pathlib import Path
-
+    res = export_roster(_roster_filters(q), fmt, scope)
     name = Path(res["path"]).name
     return {
         "path": "deterministic",
@@ -155,7 +175,21 @@ def _do_export(q: str, scope: Scope) -> dict:
     }
 
 
+def _do_mixed(q: str, scope: Scope, aggregate_kind: str) -> dict:
+    aggregate = _do_top_team() if aggregate_kind == "top_team" else _do_region_rate(q)
+    roster = _do_list(q, scope)
+    return {
+        "path": "mixed",
+        "tool": f"{aggregate['tool']} + {roster['tool']}",
+        "answer": f"{aggregate['answer']} {roster['answer']}",
+        "rows": roster["rows"],
+        "columns": roster["columns"],
+        "total_matching": roster["total_matching"],
+    }
+
+
 # --- aggregate handlers -----------------------------------------------------
+
 
 def _do_region_rate(q: str) -> dict:
     region = _find_region(q)
@@ -189,12 +223,25 @@ def _selfcheck() -> None:
         ("Export the full active roster for my region to Excel.", "deterministic", "export_roster"),
         ("Who rolls up to employee 100001?", "deterministic", "list_org_under"),
         ("How many active people are on the Azure Data team?", "deterministic", "count_roster"),
+        ("Show me the EMEA attrition rate.", "aggregate", "region_attrition"),
+        (
+            "Show EMEA attrition and list employees who left.",
+            "mixed",
+            "region_attrition + list_roster",
+        ),
     ]
     for q, path, tool in cases:
         r = route(q, scope)
         assert r["path"] == path, (q, r.get("path"), path)
         assert r["tool"] == tool, (q, r.get("tool"), tool)
-    print("router OK: 6 demo questions route to the correct path/tool")
+    filtered = route("Export active Azure Data employees in EMEA to CSV.", scope)
+    expected = count_roster(
+        {"active_status": "Active", "team": "Azure Data", "region": "EMEA"}, scope
+    )["count"]
+    assert filtered["row_count"] == expected, (filtered, expected)
+    inactive = route("List inactive employees in EMEA.", scope)
+    assert inactive["total_matching"] == 322, inactive
+    print("router OK: demo, mixed, filter, and status questions route correctly")
 
 
 if __name__ == "__main__":

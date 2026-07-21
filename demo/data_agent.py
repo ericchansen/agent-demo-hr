@@ -21,9 +21,9 @@ def region_attrition(region: str | None) -> dict:
     params = (region,) if region else ()
     with connect() as conn:
         total = conn.execute(f"SELECT COUNT(*) FROM fact_employee {where}", params).fetchone()[0]
-        attr = conn.execute(
-            f"SELECT COUNT(*) FROM fact_employee {where_attr}", params
-        ).fetchone()[0]
+        attr = conn.execute(f"SELECT COUNT(*) FROM fact_employee {where_attr}", params).fetchone()[
+            0
+        ]
     rate = attr / total if total else 0.0
     return {
         "region": region or "overall",
