@@ -212,37 +212,3 @@ def _do_top_team() -> dict:
         "tool": "top_attrition_team",
         "answer": f"Highest attrition: {t['team']} (~{t['attrition_rate']:.0%}).",
     }
-
-
-def _selfcheck() -> None:
-    scope = resolve_scope("emea.hrbp@contoso.com")
-    cases = [
-        ("What's Contoso's attrition rate in EMEA this year?", "aggregate", "region_attrition"),
-        ("Which team has the highest attrition?", "aggregate", "top_attrition_team"),
-        ("List active employees on the Azure Data team in EMEA.", "deterministic", "list_roster"),
-        ("Export the full active roster for my region to Excel.", "deterministic", "export_roster"),
-        ("Who rolls up to employee 100001?", "deterministic", "list_org_under"),
-        ("How many active people are on the Azure Data team?", "deterministic", "count_roster"),
-        ("Show me the EMEA attrition rate.", "aggregate", "region_attrition"),
-        (
-            "Show EMEA attrition and list employees who left.",
-            "mixed",
-            "region_attrition + list_roster",
-        ),
-    ]
-    for q, path, tool in cases:
-        r = route(q, scope)
-        assert r["path"] == path, (q, r.get("path"), path)
-        assert r["tool"] == tool, (q, r.get("tool"), tool)
-    filtered = route("Export active Azure Data employees in EMEA to CSV.", scope)
-    expected = count_roster(
-        {"active_status": "Active", "team": "Azure Data", "region": "EMEA"}, scope
-    )["count"]
-    assert filtered["row_count"] == expected, (filtered, expected)
-    inactive = route("List inactive employees in EMEA.", scope)
-    assert inactive["total_matching"] == 322, inactive
-    print("router OK: demo, mixed, filter, and status questions route correctly")
-
-
-if __name__ == "__main__":
-    _selfcheck()

@@ -10,10 +10,13 @@ import sys
 
 from mcp.server.fastmcp import FastMCP
 
+from data.seed_local import ensure_seeded
+
 from .registry import register
 
 
 def build_server() -> FastMCP:
+    ensure_seeded()
     mcp = FastMCP("roster-mcp")
     register(mcp)
     return mcp
@@ -26,6 +29,7 @@ def _smoke() -> None:
     from .tools import list as list_tool
     from .tools import org as org_tool
 
+    ensure_seeded()
     scope = resolve_scope()
     print(f"scope: {scope.user_upn} region={scope.allowed_region} team={scope.allowed_team}")
     print("schema:", schema.get_roster_schema())

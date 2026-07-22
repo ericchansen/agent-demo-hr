@@ -29,7 +29,7 @@ caller's RLS scope server-side. See `docs/demo-script.md` for the full script.
 
 This session builds the **locally-runnable foundation only** — no cloud:
 
-- `data/` — deterministic synthetic HR data generator + local SQLite seed.
+- `data/` — deterministic synthetic HR data generator + committed CSV seed.
 - `roster_mcp/` — the Roster MCP server (MCP Python SDK), one module per tool,
   running against local SQLite with a **mock identity** shim.
 - `orchestrator/` — draft instructions, user-context resolver, and a
@@ -46,19 +46,36 @@ see `docs/production-mapping.md`. Those are intentionally **not** built here.
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\activate   |   Unix: source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e .
 
-python data/generate_hr.py            # (re)generate deterministic data — already committed
-python data/seed_local.py             # build the local SQLite DB
-python -m roster_mcp.server --smoke   # exercise the tools directly
-python orchestrator/eval/run_eval.py  # roster correctness + RLS non-leakage
-pytest -q                             # unit tests
+hr-demo                              # auto-seeds SQLite, then serves http://127.0.0.1:8000
 ```
+
+`python -m demo` is the equivalent launch command. Open the page, click a
+suggested question, then switch personas to prove that the same export request
+returns a different server-scoped rowset.
 
 ### Run the MCP server
 
 ```bash
 python -m roster_mcp.server           # stdio transport; point an MCP client at it
+```
+
+### Contributor checks
+
+```bash
+pip install -e ".[dev]"
+python -m roster_mcp.server --smoke   # exercise the tools directly
+python orchestrator/eval/run_eval.py  # roster correctness + RLS non-leakage
+pytest -q                             # unit tests
+```
+
+The synthetic CSVs are committed. To intentionally regenerate them, install the
+separate data extra and run `python data/generate_hr.py`:
+
+```bash
+pip install -e ".[data]"
+python data/generate_hr.py
 ```
 
 ### Switch persona (see RLS in action)
@@ -72,14 +89,14 @@ $env:ROSTER_DEV_UPN = "apac.hrbp@contoso.com"
 python -m roster_mcp.server --smoke
 ```
 
-Personas live in `teams/personas.md`; the RLS scope map is `hr_access` in
-`data/`.
+Personas live in `teams/personas.md`; the RLS scope map is
+`data/hr_access.csv`.
 
 ## Tools (`roster_mcp/tools/`)
 
 | Tool | Purpose |
 |------|---------|
-| `get_roster_schema` | distinct teams/orgs/regions/offices you may filter on (scoped) |
+| `get_roster_schema` | distinct values accepted by roster filters (scoped) |
 | `count_roster` | headcount for a filter (scoped) |
 | `list_roster` | capped list of matching employees (scoped) |
 | `list_org_under` | recursive org-tree walk under a manager (scoped) |

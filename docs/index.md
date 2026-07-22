@@ -39,5 +39,5 @@ data permissions.
 
 The whole roster path runs locally against SQLite with a mock identity — no
 cloud required. See the [repository README](https://github.com/ericchansen/agent-demo-hr#quickstart)
-for the `clone → seed → eval` quickstart, and the [Runbook](runbook.html) for the
-day-to-day dev loop.
+for the `clone → install → run` quickstart, and the [Runbook](runbook.html) for
+the day-to-day dev loop.

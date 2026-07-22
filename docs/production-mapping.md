@@ -10,7 +10,7 @@ not built in this repo yet.**
 
 | Local (this repo) | Production (cloud — TODO) |
 |-------------------|---------------------------|
-| `data/generate_hr.py` → parquet/CSV | Load into a **Fabric lakehouse**; build a semantic model / star schema |
+| `data/generate_hr.py` → CSV | Load into a **Fabric lakehouse**; build a semantic model / star schema |
 | `data/hr_local.db` (SQLite) | **Fabric SQL** endpoint |
 | `demo/data_agent.py` computes aggregate answers from SQLite | **Fabric data agent** (NL2SQL) for the aggregate path |
 | `roster_mcp` against SQLite | Same MCP server against **Fabric SQL**, hosted (Container Apps / Functions) |

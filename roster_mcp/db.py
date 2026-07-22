@@ -20,15 +20,17 @@ if TYPE_CHECKING:
 _SQL_FILE = Path(__file__).resolve().parent / "queries.sql"
 
 # Columns a caller may filter on. Anything else is rejected at the boundary.
-FILTER_COLUMNS = {
-    "region",
-    "team",
-    "org",
-    "department",
-    "office_location",
-    "active_status",
-    "employment_type",
-}
+FILTER_COLUMNS = frozenset(
+    {
+        "region",
+        "team",
+        "org",
+        "department",
+        "office_location",
+        "active_status",
+        "employment_type",
+    }
+)
 
 # Columns exposed in roster/list/export output. Sensitive attributes
 # (gender, age, income, salary_band, performance, satisfaction) are excluded.
@@ -48,8 +50,8 @@ ROSTER_COLUMNS = [
     "active_status",
 ]
 
-# Columns a caller may request distinct values for (filter discovery).
-SCHEMA_COLUMNS = {"region", "team", "org", "office_location", "department"}
+# Columns exposed for filter discovery.
+SCHEMA_COLUMNS = ("region", "team", "org", "office_location", "department")
 
 
 def connect() -> sqlite3.Connection:
