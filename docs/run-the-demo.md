@@ -14,12 +14,10 @@ and prove row-level security by switching who's signed in.
 
 ## Start it
 
-```bash
-python data/seed_local.py     # once — builds data/hr_local.db from the synthetic seed
-python -m demo.app            # serves http://127.0.0.1:8000
-```
-
-Open <http://127.0.0.1:8000> and click a suggested question (or type your own).
+Follow the repository [Quickstart](https://github.com/ericchansen/agent-demo-hr#quickstart)
+and run `hr-demo`. It creates or refreshes `data/hr_local.db` from the committed
+synthetic CSV data, then serves <http://127.0.0.1:8000>. `python -m demo` is
+equivalent.
 
 ## What you're looking at
 

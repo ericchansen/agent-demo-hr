@@ -11,18 +11,15 @@ Fabric services, so they are printed and marked SKIP here.
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 
+from data.seed_local import seed
+
 HERE = Path(__file__).resolve().parent
-REPO = HERE.parents[1]
-sys.path.insert(0, str(REPO / "data"))
 
 
 def _seed() -> None:
-    import seed_local
-
-    seed_local.seed()
+    seed()
 
 
 def _load(name: str) -> list[dict]:

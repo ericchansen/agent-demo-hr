@@ -1,6 +1,6 @@
-"""Local Teams-style chat demo — the user-facing surface. Zero new deps (stdlib).
+"""Local Teams-style chat demo — the user-facing surface.
 
-    python -m demo.app            # serves http://127.0.0.1:8000
+    python -m demo                # seeds data and serves http://127.0.0.1:8000
 
 # ponytail: a single-file stdlib http.server (ThreadingHTTPServer) for a local
 # demo — not a production host. All real work is the existing Roster tools + the
@@ -15,8 +15,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from data.seed_local import ensure_seeded
 from roster_mcp.auth_obo import resolve_scope
-from roster_mcp.config import db_path, export_dir
+from roster_mcp.config import export_dir
 
 from .router import route
 
@@ -145,8 +146,7 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
-    if not db_path().exists():
-        raise SystemExit(f"Seed DB not found at {db_path()}. Run:  python data/seed_local.py")
+    ensure_seeded()
     print(f"Contoso HR Assistant demo -> http://{HOST}:{PORT}  (Ctrl+C to stop)")
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
 

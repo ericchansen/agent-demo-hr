@@ -57,7 +57,7 @@ flowchart TD
 | **Orchestrator** | Routes each turn to a path; holds the system prompt | Azure AI Foundry agent | `demo/router.py` keyword router + `orchestrator/instructions.md` |
 | **Aggregate path** | Turns a question into governed SQL/DAX; returns a number | [Fabric data agent](https://learn.microsoft.com/fabric/data-science/concept-data-agent), [consumed in Foundry via its MCP endpoint](https://learn.microsoft.com/azure/foundry/agents/how-to/tools/fabric) | `demo/data_agent.py` computes golden metrics from the seed |
 | **Deterministic path** | Exact list / count / org-walk / **file export** | Roster tool — a custom **MCP server** over parameterized SQL | `roster_mcp/` against SQLite (fully built) |
-| **Data** | Employees + people metrics | Fabric **lakehouse** table + **semantic model** | `data/hr_local.db` (SQLite) seeded from committed synthetic parquet/CSV |
+| **Data** | Employees + people metrics | Fabric **lakehouse** table + **semantic model** | `data/hr_local.db` (SQLite) auto-seeded from committed synthetic CSV |
 | **Identity & security** | Per-user scoping | Entra ID + [On-Behalf-Of](https://learn.microsoft.com/entra/identity-platform/v2-oauth2-on-behalf-of-flow) → [Fabric row-level security](https://learn.microsoft.com/fabric/data-warehouse/row-level-security) | `auth_obo.py` scope shim over an `hr_access` map |
 
 ## Why two paths (routing)

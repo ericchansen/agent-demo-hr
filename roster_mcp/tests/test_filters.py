@@ -7,6 +7,7 @@ import pytest
 from roster_mcp.db import connect
 from roster_mcp.tools.count import count_roster
 from roster_mcp.tools.list import list_roster
+from roster_mcp.tools.schema import get_roster_schema
 
 
 def _direct_count(sql: str, params: list) -> int:
@@ -34,6 +35,13 @@ def test_list_respects_row_cap(emea_scope):
     res = list_roster({}, limit=10_000, scope=emea_scope)
     assert res["row_count"] <= 200  # config.LIST_ROW_CAP
     assert res["truncated"] is True
+
+
+def test_schema_exposes_every_supported_discovery_column(emea_scope):
+    result = get_roster_schema(emea_scope)
+
+    assert set(result) == {"region", "team", "org", "office_location", "department"}
+    assert result["department"]
 
 
 def test_unknown_filter_column_rejected(emea_scope):

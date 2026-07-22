@@ -7,14 +7,16 @@
 
 ## What actually ships
 
-Two artifacts, emitted as parquet **and** CSV into `data/`:
+Two CSV artifacts are emitted into `data/`:
 
 | Artifact | Grain | Purpose |
 |----------|-------|---------|
 | `fact_employee` | one row per employee (~5,000) | the wide fact table everything queries |
 | `hr_access` | one row per demo persona | row-level-security scope map |
 
-`data/seed_local.py` loads both into a local SQLite DB (`data/hr_local.db`).
+`hr-demo` automatically loads both into a local SQLite DB
+(`data/hr_local.db`). `python data/seed_local.py` performs the same seed step
+without starting the demo.
 
 ## Star schema (conceptual)
 

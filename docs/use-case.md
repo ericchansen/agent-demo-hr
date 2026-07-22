@@ -74,7 +74,7 @@ splits retrieval into two paths and routes each question to the right one. See
 | **N3 — Determinism** | The retrieval path is reproducible: the same filter and the same identity always return the same rows. |
 | **N4 — No real PII** | This reference runs entirely on **synthetic** data. Real HRIS data is out of scope for the public repo. |
 | **N5 — Auditability** | Who asked what, and what scope they were granted, is a recordable event (wired in the hosted phase). |
-| **N6 — Reproducible dev loop** | `clone → seed → run → eval` works locally with no cloud dependency. |
+| **N6 — Reproducible dev loop** | `clone → install → run → eval` works locally with no cloud dependency. |
 
 ## Out of scope
 

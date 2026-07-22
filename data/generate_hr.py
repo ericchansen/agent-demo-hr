@@ -1,8 +1,8 @@
 """Deterministic synthetic Contoso HR data generator.
 
-Emits a single wide fact table (`fact_employee`) plus an access map
-(`hr_access`) as parquet + CSV into ``data/``. Fixed seeds make the output
-byte-stable and safe to commit.
+Emits a single wide fact table (``fact_employee``) plus an access map
+(``hr_access``) as CSV into ``data/``. Fixed seeds make the output byte-stable
+and safe to commit.
 
 100% FICTIONAL. No real people. Design reference only (not downloaded):
 IBM HR Analytics Employee Attrition (CC0) — kaggle pavansubhasht/ibm-hr-analytics-attrition-dataset.
@@ -250,9 +250,7 @@ def self_check(fact: pd.DataFrame, access: pd.DataFrame) -> None:
 def main() -> None:
     fact, access = generate()
     self_check(fact, access)
-    fact.to_parquet(OUT_DIR / "fact_employee.parquet", index=False)
     fact.to_csv(OUT_DIR / "fact_employee.csv", index=False)
-    access.to_parquet(OUT_DIR / "hr_access.parquet", index=False)
     access.to_csv(OUT_DIR / "hr_access.csv", index=False)
     print(f"wrote {len(fact)} employees, {len(access)} access rows to {OUT_DIR}")
     print(f"overall attrition: {fact['attrition_flag'].mean():.2%}")

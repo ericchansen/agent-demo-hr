@@ -38,7 +38,7 @@ def _filters(
 def register(mcp: FastMCP) -> None:
     @mcp.tool()
     def get_roster_schema() -> dict:
-        """Distinct teams/orgs/regions/offices you're allowed to filter on."""
+        """Distinct filter values available within your access scope."""
         return schema.get_roster_schema()
 
     @mcp.tool()

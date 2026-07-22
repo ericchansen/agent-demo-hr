@@ -36,7 +36,5 @@ Golden numbers below come from the committed seed (`orchestrator/eval/golden.jso
 
 ## Reproduce locally
 
-```bash
-python data/seed_local.py
-python orchestrator/eval/run_eval.py   # asserts 1–6's roster + RLS behavior
-```
+Start `hr-demo` as described in [Run the demo](run-the-demo.html). For the
+non-interactive acceptance checks, run `python orchestrator/eval/run_eval.py`.
